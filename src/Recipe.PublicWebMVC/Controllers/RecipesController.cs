@@ -1,14 +1,22 @@
-﻿using Recipe.Service.Models;
+﻿using PublicWebMVC.Models;
 using System.Collections.Generic;
 using System.Web;
 using System.Web.Http;
-using System.Web.Http.Cors;
+using Microsoft.AspNetCore.Cors;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Hosting;
 
-namespace Recipe.Service.Controllers
+namespace PublicWebMVC.Controllers
 {
-    [EnableCors("*", "*", "*")]
-    public class RecipesController : ApiController
+    public class RecipesController : ControllerBase
     {
+        private readonly IHostingEnvironment environment;
+
+        public RecipesController(IHostingEnvironment environment)
+        {
+            this.environment = environment;
+            RecipeManager.Singleton.environment = environment;
+        }
         /// <summary>
         /// Lists an index of all recipes
         /// </summary>
@@ -29,17 +37,17 @@ namespace Recipe.Service.Controllers
         public Models.Recipe Get(string id)
         {
             long idAsLong = 0;
-            if (!long.TryParse(id, out idAsLong))
-            {
-                throw new HttpException(404, "Invalid id");
-            }
+            //if (!long.TryParse(id, out idAsLong))
+            //{
+            //    throw new HttpException(404, "Invalid id");
+            //}
 
             Models.Recipe recipe = Models.RecipeManager.Singleton.GetRecipeById(idAsLong);
 
-            if (recipe == null)
-            {
-                throw new HttpException(404, $"Recipe not found for id {id}");
-            }
+            //if (recipe == null)
+            //{
+            //    throw new HttpException(404, $"Recipe not found for id {id}");
+            //}
 
             return recipe;
         }
@@ -50,10 +58,10 @@ namespace Recipe.Service.Controllers
         {
             List<Models.Recipe> recipes = RecipeManager.Singleton.GetRecipesByName(name);
 
-            if (recipes == null)
-            {
-                throw new HttpException(404, $"Recipes not found for name {name}");
-            }
+            //if (recipes == null)
+            //{
+            //    throw new HttpException(404, $"Recipes not found for name {name}");
+            //}
             return recipes;
         }
 

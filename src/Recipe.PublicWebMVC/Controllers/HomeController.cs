@@ -26,7 +26,7 @@ namespace PublicWebMVC.Controllers
 
             if (!String.IsNullOrEmpty(searchString)) {
                 HttpClient client = new HttpClient();
-                client.BaseAddress = new Uri("http://localhost:64407/api/recipes/search/");
+                client.BaseAddress = new Uri("http://localhost:51241/api/recipes/search/");
                 HttpResponseMessage response = await client.GetAsync(searchString);
 
                 if (response.IsSuccessStatusCode)
@@ -70,12 +70,12 @@ namespace PublicWebMVC.Controllers
         private async Task<Models.Recipe> GetRecipeById(long id)
         {
             // Note: This is all crazytown code to demonstrate snapshots on exceptions
-            apiClient = new RestClient("http://localhost:64407"); //http://localhost:64407
+            apiClient = new RestClient("http://localhost:51241"); //http://localhost:64407
             RestRequest request = new RestRequest();
             request.Resource = "api/recipes/{id}";
             request.AddUrlSegment("id", id);
 
-            IRestResponse<Recipe> response = null;
+            IRestResponse<Models.Recipe> response = null;
 
             try
             {
@@ -90,10 +90,10 @@ namespace PublicWebMVC.Controllers
             return response.Data;
         }
 
-        private async Task<IRestResponse<Recipe>> ExecuteRestSharpAsync(RestRequest request)
+        private async Task<IRestResponse<Models.Recipe>> ExecuteRestSharpAsync(RestRequest request)
         {
             var cancellationTokenSource = new CancellationTokenSource();
-            IRestResponse<Recipe> response = await apiClient.ExecuteTaskAsync<Recipe>(request, cancellationTokenSource.Token);
+            IRestResponse<Models.Recipe> response = await apiClient.ExecuteTaskAsync<Models.Recipe>(request, cancellationTokenSource.Token);
             if(response.ErrorException != null)
             {
                 throw response.ErrorException;

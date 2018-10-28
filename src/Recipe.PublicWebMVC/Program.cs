@@ -20,7 +20,6 @@ namespace PublicWebMVC
         public static IWebHost BuildWebHost(string[] args) =>
             WebHost.CreateDefaultBuilder(args)
                 .UseStartup<Startup>()
-                //.UseUrls("http://localhost:61906")
                 .Build();
     }
 }

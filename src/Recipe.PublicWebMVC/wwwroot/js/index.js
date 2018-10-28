@@ -1,6 +1,6 @@
 ﻿(function () {
     $(document).ready(function () {
-        $.getJSON("http://localhost:64407/api/recipes/?limit=16", function (data) {
+        $.getJSON("http://localhost:51241/api/recipes/?limit=16", function (data) {
             var cardContainer = $("#cardContainer");
 
             if (!data) {

@@ -1,4 +1,5 @@
-﻿using Newtonsoft.Json;
+﻿using Microsoft.AspNetCore.Hosting;
+using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 using System;
 using System.Collections.Generic;
@@ -9,11 +10,12 @@ using System.Runtime.Serialization;
 using System.Web;
 using System.Xml;
 
-namespace Recipe.Service.Models
+namespace PublicWebMVC.Models
 {
     public class RecipeManager
     {
         public static RecipeManager Singleton;
+        public IHostingEnvironment environment;
 
         static RecipeManager()
         {
@@ -27,7 +29,9 @@ namespace Recipe.Service.Models
 
         public RecipeManager()
         {
-            string resolvedPath = System.Web.HttpContext.Current.Server.MapPath(RecipesPath);
+            string resolvedPath = "C:\\Users\\anthc\\source\\repos\\vs-diagnostics-demo-recipe-app\\src\\Recipe.PublicWebMVC\\App_Data\\Recipes";
+            //string resolvedPath = Path.Combine(environment.WebRootPath, RecipesPath);
+            //string resolvedPath = System.Web.HttpContext.Current.Server.MapPath(RecipesPath);
 
             foreach (string fileName in Directory.GetFiles(resolvedPath))
             {
