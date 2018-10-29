@@ -37,17 +37,19 @@ namespace PublicWebMVC.Controllers
         public Models.Recipe Get(string id)
         {
             long idAsLong = 0;
-            //if (!long.TryParse(id, out idAsLong))
-            //{
-            //    throw new HttpException(404, "Invalid id");
-            //}
+            if (!long.TryParse(id, out idAsLong))
+            {
+                //throw new HttpException(404, "Invalid id");
+                throw new System.Exception();
+            }
 
             Models.Recipe recipe = Models.RecipeManager.Singleton.GetRecipeById(idAsLong);
 
-            //if (recipe == null)
-            //{
-            //    throw new HttpException(404, $"Recipe not found for id {id}");
-            //}
+            if (recipe == null)
+            {
+                //throw new HttpException(404, $"Recipe not found for id {id}");
+                throw new System.Exception();
+            }
 
             return recipe;
         }
