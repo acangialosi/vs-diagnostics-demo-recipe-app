@@ -15,31 +15,42 @@ namespace PublicWebMVC.Models
     public class RecipeManager
     {
         public static RecipeManager Singleton;
-        public IHostingEnvironment environment;
+        private bool RecipesLoaded = false;
+        private readonly object RecipesLoadedLock = new object();
 
         static RecipeManager()
         {
             Singleton = new RecipeManager();
         }
 
-        private string RecipesPath = "~/App_Data/Recipes";
+        private string RecipesPath = "..\\App_Data\\Recipes";
         private Dictionary<long?, Recipe> Recipes = new Dictionary<long?, Recipe>();
         private Random rand = new Random();
 
 
         public RecipeManager()
         {
-            string resolvedPath = "C:\\Users\\anthc\\source\\repos\\vs-diagnostics-demo-recipe-app\\src\\Recipe.PublicWebMVC\\App_Data\\Recipes";
-            //string resolvedPath = Path.Combine(environment.WebRootPath, RecipesPath);
-            //string resolvedPath = System.Web.HttpContext.Current.Server.MapPath(RecipesPath);
 
-            foreach (string fileName in Directory.GetFiles(resolvedPath))
+        }
+
+        public void LoadRecipes(IHostingEnvironment env)
+        {
+            lock (RecipesLoadedLock)
             {
-                string json = File.ReadAllText(fileName);
-                Recipe recipe = LoadRecipeFromJson(json);
-                Recipes.Add(recipe.Id, recipe);
+                if (!RecipesLoaded)
+                {
+                    string resolvedPath = Path.Combine(env.WebRootPath, RecipesPath);
+
+                    foreach (string fileName in Directory.GetFiles(resolvedPath))
+                    {
+                        string json = File.ReadAllText(fileName);
+                        Recipe recipe = LoadRecipeFromJson(json);
+                        Recipes.Add(recipe.Id, recipe);
+                    }
+                    keysEnumerator = Recipes.Keys.GetEnumerator();
+                    RecipesLoaded = true;
+                }
             }
-            keysEnumerator = Recipes.Keys.GetEnumerator();
         }
 
         public Recipe GetRecipeById(long id)
@@ -51,14 +62,17 @@ namespace PublicWebMVC.Models
             return Recipes[id];
         }
 
-        public List<Recipe> GetRecipesByName(string name) {
+        public List<Recipe> GetRecipesByName(string name)
+        {
             Recipe[] recipesArray = Recipes.Values.ToArray();
             List<Recipe> recipes = null;
 
-            for (int i = 0; i < recipesArray.Length; i++) {
+            for (int i = 0; i < recipesArray.Length; i++)
+            {
 
                 // Perform case insensitive search
-                if (recipesArray[i].Title.IndexOf(name, StringComparison.OrdinalIgnoreCase) >= 0) {
+                if (recipesArray[i].Title.IndexOf(name, StringComparison.OrdinalIgnoreCase) >= 0)
+                {
                     recipes.Add(recipesArray[i]);
                 }
             }
@@ -118,15 +132,15 @@ namespace PublicWebMVC.Models
 
         private List<Recipe> GetRecipesLinqSpeedTestInner(List<Recipe> recipes)
         {
-            recipes = ( from recipe in recipes
-                        orderby recipe.SpoonacularScore descending
-                        select recipe).Take(10).ToList();
+            recipes = (from recipe in recipes
+                       orderby recipe.SpoonacularScore descending
+                       select recipe).Take(10).ToList();
 
             return recipes;
         }
         private List<Recipe> GetRecipesBubbleSortSpeedTest()
         {
-            List<Recipe> bubbleSortRecipes=null;
+            List<Recipe> bubbleSortRecipes = null;
             for (int i = 0; i < 100; i++)
             {
                 List<Recipe> bubbleSortLocalCopy = new List<Recipe>(Recipes.Values);

@@ -15,7 +15,7 @@ namespace PublicWebMVC.Controllers
         public RecipesController(IHostingEnvironment environment)
         {
             this.environment = environment;
-            RecipeManager.Singleton.environment = environment;
+            RecipeManager.Singleton.LoadRecipes(environment);
         }
         /// <summary>
         /// Lists an index of all recipes

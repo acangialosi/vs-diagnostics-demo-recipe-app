@@ -6,6 +6,7 @@ using System.Net;
 using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 using PublicWebMVC.Models;
@@ -17,7 +18,14 @@ namespace PublicWebMVC.Controllers
     {
         public IActionResult Index()
         {
+            ViewBag.URL = BuildAbsolute("/api/recipes/", new QueryString("?limit=16"));
             return View();
+        }
+
+        public string BuildAbsolute(PathString path, QueryString query = default(QueryString), FragmentString fragment = default(FragmentString))
+        {
+            var rq = HttpContext.Request;
+            return Microsoft.AspNetCore.Http.Extensions.UriHelper.BuildAbsolute(rq.Scheme, rq.Host, rq.PathBase, path, query, fragment);
         }
 
         public async Task<IActionResult> SearchResults(string searchString)
@@ -26,7 +34,7 @@ namespace PublicWebMVC.Controllers
 
             if (!String.IsNullOrEmpty(searchString)) {
                 HttpClient client = new HttpClient();
-                client.BaseAddress = new Uri("http://localhost:51241/api/recipes/search/");
+                client.BaseAddress = new Uri(BuildAbsolute("/api/recipes/search/"));
                 HttpResponseMessage response = await client.GetAsync(searchString);
 
                 if (response.IsSuccessStatusCode)
@@ -70,7 +78,7 @@ namespace PublicWebMVC.Controllers
         private async Task<Models.Recipe> GetRecipeById(long id)
         {
             // Note: This is all crazytown code to demonstrate snapshots on exceptions
-            apiClient = new RestClient("http://localhost:51241"); //http://localhost:64407
+            apiClient = new RestClient(BuildAbsolute(""));
             RestRequest request = new RestRequest();
             request.Resource = "api/recipes/{id}";
             request.AddUrlSegment("id", id);
